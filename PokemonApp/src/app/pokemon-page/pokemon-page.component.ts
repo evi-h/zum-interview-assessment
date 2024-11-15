@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TableComponent } from '../table/shared-table.component';
 import { PokemonDataService } from '../shared/pokemon-data.service';
-import { NgClass, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
