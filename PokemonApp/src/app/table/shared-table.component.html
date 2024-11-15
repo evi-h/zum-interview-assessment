@@ -1,0 +1,19 @@
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Wins</th>
+    <th>Losses</th>
+    <th>Ties</th>
+  </tr>
+  <tr
+    [ngClass]="e ? 'even' : ''"
+    *ngFor="let pokemon of service.pokemonList; let e = even"
+  >
+    <td>{{ pokemon.id }}</td>
+    <td>{{ pokemon.name }}</td>
+    <td>{{ pokemon.wins }}</td>
+    <td>{{ pokemon.losses }}</td>
+    <td>{{ pokemon.ties }}</td>
+  </tr>
+</table>

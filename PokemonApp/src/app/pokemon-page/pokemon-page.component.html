@@ -1,0 +1,18 @@
+<div style="display: flex; align-items: center">
+  <select [(ngModel)]="sortType" style="margin-right: 10px">
+    <option value="id">ID</option>
+    <option value="name">Name</option>
+    <option value="wins">Wins</option>
+    <option value="losses">Losses</option>
+    <option value="ties">Ties</option>
+  </select>
+
+  <select [(ngModel)]="sortDirection" style="margin-right: 10px">
+    <option value="desc">Descending</option>
+    <option value="asc">Ascending</option>
+  </select>
+
+  <button (click)="sort()">Search</button>
+</div>
+
+<app-shared-table />
