@@ -30,10 +30,10 @@ public class PokemonController : ControllerBase
             return BadRequest("sortDirection parameter is invalid");
         }
 
+        List<PokemonDetail> pokemonList = await GetPokemonService.GetPokemonListAsync(8);
+        IEnumerable<PokemonDetail> pokemonListSimulated = GetPokemonService.SimulateBattles(pokemonList);
+
         var propertyInfo = typeof(PokemonDetail).GetProperty(sortOptions[sortBy]);
-
-        IEnumerable<PokemonDetail> pokemonList = await GetPokemonService.SimulateBattlesAsync(8);
-
         
         return Ok(sortDirection == "desc" ? 
         pokemonList.OrderByDescending(p => propertyInfo.GetValue(p, null)) : 

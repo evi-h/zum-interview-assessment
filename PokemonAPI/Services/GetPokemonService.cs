@@ -9,31 +9,36 @@ namespace PokemonAPI.Services{
         private static Random random = new Random();
         private static readonly HttpClient client = new HttpClient();
 
-        private static readonly Dictionary<string, string> fightingRulesMap = new Dictionary<string, string> { { "water", "fire"}, { "fire", "grass"}, {"grass", "electric"}, {"electric", "water"}, {"ghost", "psychic"}, {"psychic","fighting"}, {"fighting","dark"}, {"dark", "ghost"} };
+        private static readonly Dictionary<string, string> fightingRulesMap = new Dictionary<string, string> { 
+            {"water", "fire"},
+            {"fire", "grass"},
+            {"grass", "electric"},
+            {"electric", "water"},
+            {"ghost", "psychic"},
+            {"psychic","fighting"},
+            {"fighting","dark"},
+            {"dark", "ghost"}
+        };
 
+        public static List<PokemonDetail> SimulateBattles(List<PokemonDetail> pokemonDetailList){
 
-
-
-        public static async Task<IEnumerable<PokemonDetail>> SimulateBattlesAsync (int numOfPokemon){
-
-            List<PokemonDetail> pokemonDetailList = await GetPokemonList(numOfPokemon);
-
-            for (int i = 0; i < pokemonDetailList.Count() - 1; i++){
+            for(int i = 0; i < pokemonDetailList.Count() - 1; i++){
                 for(int j = i + 1;  j < pokemonDetailList.Count(); j++){
-                    SimulateBattle( pokemonDetailList[i],  pokemonDetailList[j]);
+                    GetResult( pokemonDetailList[i],  pokemonDetailList[j]);
                 }
             }
 
-            IEnumerable<PokemonDetail> enumerablePokemonList = pokemonDetailList;
-            return enumerablePokemonList;
+            return pokemonDetailList;
         }
 
-        private static void SimulateBattle( PokemonDetail pokemon1,  PokemonDetail pokemon2){
+        private static void GetResult(PokemonDetail pokemon1,  PokemonDetail pokemon2){
 
-            if(IsWinner(pokemon1,pokemon2)){
+            int result = SimulateBattle(pokemon1,pokemon2);
+
+            if(result == 1){
                 pokemon1.Wins++;
                 pokemon2.Losses++;
-            }else if(IsWinner(pokemon2,pokemon1)){
+            }else if(result == 2){
                 pokemon2.Wins++;
                 pokemon1.Losses++;
             }else{
@@ -42,14 +47,27 @@ namespace PokemonAPI.Services{
             }
         }
 
-        private static bool IsWinner(PokemonDetail pokemon1,  PokemonDetail pokemon2){
-            return (fightingRulesMap.ContainsKey(pokemon1.Type) && fightingRulesMap[pokemon1.Type] == pokemon2.Type) || pokemon1.BaseExperience > pokemon2.BaseExperience;
+        private static int SimulateBattle(PokemonDetail pokemon1,  PokemonDetail pokemon2){
+            
+            if(fightingRulesMap.ContainsKey(pokemon1.Type) && fightingRulesMap.ContainsKey(pokemon2.Type)){
+                if(fightingRulesMap[pokemon1.Type] == pokemon2.Type){
+                    return 1; // pokemon 1 wins
+                }else if(fightingRulesMap[pokemon2.Type] == pokemon1.Type){
+                    return 2; // opponent wins
+                }
+            }
+            
+            if(pokemon1.BaseExperience > pokemon2.BaseExperience){
+                return 1;
+            }else if(pokemon1.BaseExperience < pokemon2.BaseExperience){
+                return 2;
+            }else{
+                return 0; // tie
+            }
+
         }
 
-
-
-
-        private static async Task<List<PokemonDetail>> GetPokemonList(int numOfPokemon){
+        public static async Task<List<PokemonDetail>> GetPokemonListAsync(int numOfPokemon){
 
             int minId = 1;
             int maxId = 152;
@@ -59,9 +77,9 @@ namespace PokemonAPI.Services{
             while(pokemonList.Count < numOfPokemon && pokemonIds.Count < range){
                 int randomId = random.Next(minId, maxId);
                 if(!pokemonIds.Contains(randomId)){
-                    pokemonIds.Add(randomId);
                     PokemonDetail pokemonDetail = await GetPokemonAsync(randomId);
                     if(pokemonDetail != null){
+                        pokemonIds.Add(randomId);
                         pokemonList.Add(pokemonDetail);
                     }
                 };
