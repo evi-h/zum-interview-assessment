@@ -6,20 +6,22 @@ import { PokemonData } from './pokemon-data.model';
   providedIn: 'root',
 })
 export class PokemonDataService {
-  constructor(private http: HttpClient) {}
-
   url: string = 'http://localhost:5065/pokemon/tournament/statistics';
   pokemonList: PokemonData[] = [];
 
-  getPokemonData(sortBy: string, sortDirection: string = '') {
+  constructor(private http: HttpClient) {}
+
+  getPokemonData(sortBy: string, sortDirection: string = ''): void {
     this.http
-      .get(this.url + `?sortBy=${sortBy}&sortDirection=${sortDirection}`)
+      .get<PokemonData[]>(
+        this.url + `?sortBy=${sortBy}&sortDirection=${sortDirection}`
+      )
       .subscribe({
-        next: (res) => {
-          this.pokemonList = res as PokemonData[];
+        next: (data) => {
+          this.pokemonList = data; // Update the pokemonList with the fetched data
         },
         error: (err) => {
-          console.log(err);
+          console.error('Error in request', err);
         },
       });
   }

@@ -1,5 +1,5 @@
 <div style="display: flex; align-items: center">
-  <select [(ngModel)]="sortType" style="margin-right: 10px">
+  <select class="select-type" [(ngModel)]="sortType" style="margin-right: 10px">
     <option value="id">ID</option>
     <option value="name">Name</option>
     <option value="wins">Wins</option>
@@ -7,7 +7,11 @@
     <option value="ties">Ties</option>
   </select>
 
-  <select [(ngModel)]="sortDirection" style="margin-right: 10px">
+  <select
+    class="select-direction"
+    [(ngModel)]="sortDirection"
+    style="margin-right: 10px"
+  >
     <option value="desc">Descending</option>
     <option value="asc">Ascending</option>
   </select>
