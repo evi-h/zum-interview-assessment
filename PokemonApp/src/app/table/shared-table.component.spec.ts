@@ -1,14 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgClass, NgFor } from '@angular/common';
+import { DebugElement } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { By } from '@angular/platform-browser';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { TableComponent } from './shared-table.component';
-import { NgClass, NgFor } from '@angular/common';
 import { PokemonDataService } from '../shared/pokemon-data.service';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
-import { By } from '@angular/platform-browser';
 import { PokemonData } from '../shared/pokemon-data.model';
-import { DebugElement } from '@angular/core';
 
 describe('TableComponent', () => {
   let component: TableComponent;

@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PokemonPageComponent } from './pokemon-page.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
+
+import { PokemonPageComponent } from './pokemon-page.component';
+import { SharedSelectComponent } from '../shared-select/shared-select.component';
 
 describe('PokemonPageComponent', () => {
   let component: PokemonPageComponent;
@@ -10,7 +12,7 @@ describe('PokemonPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PokemonPageComponent],
+      imports: [PokemonPageComponent, SharedSelectComponent],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
@@ -32,23 +34,39 @@ describe('PokemonPageComponent', () => {
     expect(component.sort).toHaveBeenCalled(); // Ensure the sort method was called
   });
 
-  it('should update sortType and sortDirection on dropdown selection change', () => {
-    const sortTypeSelect = fixture.debugElement.query(
+  it('should update sortType on dropdown selection change', () => {
+    const sortTypeSelectDebug = fixture.debugElement.query(
       By.css('.select-type')
-    ).nativeElement;
-    const sortDirectionSelect = fixture.debugElement.query(
-      By.css('.select-direction')
-    ).nativeElement;
+    );
 
-    sortTypeSelect.value = 'name';
-    sortTypeSelect.dispatchEvent(new Event('change')); // Trigger change event
+    const sharedSelectComponent =
+      sortTypeSelectDebug.componentInstance as SharedSelectComponent;
+
+    expect(component.sortType).toBe('id');
+
+    // Simulate selection change in SharedSelectComponent
+    sharedSelectComponent.selectedOptionChange.emit('name');
     fixture.detectChanges();
 
-    sortDirectionSelect.value = 'desc';
-    sortDirectionSelect.dispatchEvent(new Event('change')); // Trigger change event
-    fixture.detectChanges();
-
+    // Assert updated value of sortType in parent
     expect(component.sortType).toBe('name');
+  });
+
+  it('should update sortDirection on dropdown selection change', () => {
+    const sortDirectionSelectDebug = fixture.debugElement.query(
+      By.css('.select-direction')
+    );
+
+    const sharedSelectComponent =
+      sortDirectionSelectDebug.componentInstance as SharedSelectComponent;
+
     expect(component.sortDirection).toBe('desc');
+
+    // Simulate selection change in SharedSelectComponent
+    sharedSelectComponent.selectedOptionChange.emit('asc');
+    fixture.detectChanges();
+
+    // Assert updated value of sortDirection in parent
+    expect(component.sortDirection).toBe('asc');
   });
 });

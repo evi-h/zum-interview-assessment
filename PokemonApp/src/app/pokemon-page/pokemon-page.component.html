@@ -1,22 +1,19 @@
 <div style="display: flex; align-items: center">
-  <select class="select-type" [(ngModel)]="sortType" style="margin-right: 10px">
-    <option value="id">ID</option>
-    <option value="name">Name</option>
-    <option value="wins">Wins</option>
-    <option value="losses">Losses</option>
-    <option value="ties">Ties</option>
-  </select>
+  <app-shared-select
+    [options]="sortTypeOptions"
+    [(selectedOption)]="sortType"
+    class="select-type"
+  />
 
-  <select
+  <app-shared-select
+    [options]="sortDirectionOptions"
+    [(selectedOption)]="sortDirection"
     class="select-direction"
-    [(ngModel)]="sortDirection"
-    style="margin-right: 10px"
-  >
-    <option value="desc">Descending</option>
-    <option value="asc">Ascending</option>
-  </select>
+  />
 
   <button (click)="sort()">Search</button>
 </div>
+
+<br />
 
 <app-shared-table />
