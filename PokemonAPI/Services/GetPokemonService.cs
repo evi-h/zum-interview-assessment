@@ -32,12 +32,12 @@ namespace PokemonAPI.Services
             {
                 for (int j = i + 1; j < pokemonDetailList.Count(); j++)
                 {
-                    GetResult(pokemonDetailList[i], pokemonDetailList[j]);
+                    SetScore(pokemonDetailList[i], pokemonDetailList[j]);
                 }
             }
         }
 
-        private static void GetResult(PokemonDetail pokemon1, PokemonDetail pokemon2)
+        private static void SetScore(PokemonDetail pokemon1, PokemonDetail pokemon2)
         {
             switch (SimulateBattle(pokemon1, pokemon2))
             {
@@ -93,23 +93,36 @@ namespace PokemonAPI.Services
             int minId = 1;
             int maxId = 151;
             int range = maxId - minId;
+            int tries = 1;
+            int maxRetries = 10;
+
             List<PokemonDetail> pokemonList = new List<PokemonDetail>();
             Random random = new Random();
 
             HashSet<int> pokemonIds = new HashSet<int>();
 
-            while (pokemonList.Count < numOfPokemon && pokemonIds.Count <= range)
+            while (pokemonList.Count < numOfPokemon && pokemonIds.Count <= range && tries <= maxRetries)
             {
                 int randomId = random.Next(minId, maxId + 1);
                 if (!pokemonIds.Contains(randomId))
                 {
-                    PokemonDetail pokemonDetail = await GetPokemonAsync(randomId);
-                    if (pokemonDetail != null)
+                    try
                     {
+                        PokemonDetail pokemonDetail = await GetPokemonAsync(randomId);
+
                         pokemonIds.Add(randomId);
                         pokemonList.Add(pokemonDetail);
                     }
+                    catch (Exception)
+                    {
+                        tries++;
+                    };
                 };
+            }
+
+            if (tries > maxRetries)
+            {
+                throw new Exception("Max retries, try again");
             }
 
             return pokemonList;
@@ -132,7 +145,7 @@ namespace PokemonAPI.Services
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 // Parse JSON into a dynamic object
-                dynamic jsonObject = JsonConvert.DeserializeObject(responseBody);
+                dynamic? jsonObject = JsonConvert.DeserializeObject(responseBody);
 
                 // Process the response body
                 return new PokemonDetail
@@ -140,16 +153,14 @@ namespace PokemonAPI.Services
                     Id = pokemonId,
                     Name = jsonObject?.forms[0].name.ToString() ?? "",
                     Type = jsonObject?.types[0].type.name.ToString() ?? "",
-                    BaseExperience = jsonObject?.base_experience,
+                    BaseExperience = jsonObject?.base_experience ?? 0,
                 };
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine($"Request error: {e.Message}");
+                throw;
             }
-
-            // Return a default or null value in case of an error
-            return null;
         }
     }
 }

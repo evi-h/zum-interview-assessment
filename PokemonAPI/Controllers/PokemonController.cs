@@ -22,7 +22,7 @@ public class PokemonController : ControllerBase
     public async Task<ActionResult<IEnumerable<PokemonDetail>>> Get(string? sortBy, string? sortDirection = "desc")
     {
 
-        if (sortBy == null || string.IsNullOrEmpty(sortBy))
+        if (string.IsNullOrEmpty(sortBy))
         {
             return BadRequest($"{nameof(sortBy)} parameter is required");
         }
@@ -35,8 +35,19 @@ public class PokemonController : ControllerBase
             return BadRequest($"{nameof(sortDirection)} parameter is invalid");
         }
 
-        List<PokemonDetail> pokemonList = await GetPokemonService.GetPokemonListAsync(8);
+        List<PokemonDetail> pokemonList = new List<PokemonDetail>();
+
+        try
+        {
+            pokemonList = await GetPokemonService.GetPokemonListAsync(8);
+        }
+        catch (System.Exception ex)
+        {
+            return StatusCode(500, new { Message = "An internal error occurred.", Details = ex.Message });
+        }
+
         GetPokemonService.SimulateBattles(pokemonList);
+
 
         var propertyInfo = typeof(PokemonDetail).GetProperty(sortOptions[sortBy]);
 
